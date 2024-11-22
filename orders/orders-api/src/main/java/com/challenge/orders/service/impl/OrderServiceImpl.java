@@ -10,6 +10,8 @@ import com.challenge.orders.repository.entity.OrderProductEntity;
 import com.challenge.orders.service.OrderService;
 import java.time.ZoneId;
 import java.util.UUID;
+import org.challenge.core.error.BadRequestException;
+import org.challenge.core.error.ConflictException;
 import org.challenge.core.util.PriceCalculator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -66,10 +68,10 @@ public class OrderServiceImpl implements OrderService {
 		var entity = repository.getOrder(id);
 
 		if(entity.getStatus().isFinal()){
-			throw new RuntimeException();
+			throw new ConflictException("Order already closed");
 		}
 		if(patchOrder.status() == null && patchOrder.address() == null){
-			throw new RuntimeException();
+			throw new BadRequestException("All fields are null");
 		}
 
 		if(patchOrder.status() != null){
