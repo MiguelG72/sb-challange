@@ -1,0 +1,5 @@
+com/challenge/products/client/ProductClient.class
+com/challenge/products/model/PostProduct.class
+com/challenge/products/model/Product.class
+com/challenge/products/model/Product$ProductBuilder.class
+com/challenge/products/model/PostProduct$PostProductBuilder.class
