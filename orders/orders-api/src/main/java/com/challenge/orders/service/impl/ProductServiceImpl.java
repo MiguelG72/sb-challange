@@ -1,9 +1,8 @@
 package com.challenge.orders.service.impl;
 
-import com.challenge.orders.model.OrderProduct;
 import com.challenge.orders.service.ProductService;
-import com.challenge.products.client.ProductClient;
-import com.challenge.products.model.Product;
+import com.challenge.catalogue.client.ProductClient;
+import com.challenge.catalogue.model.Product;
 import java.util.List;
 import java.util.UUID;
 import org.challenge.core.util.PriceCalculator;

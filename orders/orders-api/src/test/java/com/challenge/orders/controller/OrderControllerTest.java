@@ -5,23 +5,27 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.challenge.orders.model.Order;
+import com.challenge.orders.model.OrderList;
 import com.challenge.orders.model.OrderStatus;
 import com.challenge.orders.model.PatchOrder;
 import com.challenge.orders.model.PostOrder;
 import com.challenge.orders.repository.entity.OrderEntity;
 import com.challenge.orders.repository.entity.OrderProductEntity;
 import com.challenge.orders.repository.jpa.JpaOrderRepository;
-import com.challenge.products.client.ProductClient;
-import com.challenge.products.model.Product;
+import com.challenge.orders.test.util.TransactionUtil;
+import com.challenge.catalogue.client.ProductClient;
+import com.challenge.catalogue.model.Product;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import feign.Request;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 import org.challenge.core.util.TestUtil;
@@ -30,19 +34,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
 @TestPropertySource(locations = "classpath:application-test.properties")
+@ComponentScan(basePackages = "com.challenge.orders.test.util")
 public class OrderControllerTest {
 
 	@Autowired
@@ -53,6 +59,9 @@ public class OrderControllerTest {
 
 	@Autowired
     private ObjectMapper objectMapper;
+
+	@Value("${local.timezone}")
+	String tz;
 
 	private UUID chocolateId = UUID.randomUUID();
 	private UUID chipsId = UUID.randomUUID();
@@ -74,6 +83,9 @@ public class OrderControllerTest {
 	@Autowired
 	private JpaOrderRepository repository;
 
+	@Autowired
+    private TransactionUtil transactionUtil;
+
 	@BeforeAll
 	public void setUp(){
 		when(productClient.getProduct(eq(chocolateId))).thenReturn(
@@ -88,12 +100,11 @@ public class OrderControllerTest {
 				mock(Request.class), null, null
 			)
 		);
-		repository.deleteAll();
+		transactionUtil.transactionalRunnable(() -> repository.deleteAll());
 
 	}
 
 	@Test
-	@Transactional
 	public void createOrderWithTwoValidProducts() throws Exception {
 		PostOrder postOrder = new PostOrder("some address", List.of(chocolateId, chipsId));
 
@@ -112,25 +123,28 @@ public class OrderControllerTest {
 	}
 
 	private void validateOrder(Order order){
+		transactionUtil.transactionalRunnable(
+			() -> {
+				var entity = repository.getReferenceById(order.id());
+				assertEquals(order.address(), entity.getAddress());
+				assertEquals(order.status(), entity.getStatus());
+				assertEquals(order.priceWithTax(), entity.getPrice());
+				order.products().forEach(p -> assertTrue(
+					entity.getProducts().stream().anyMatch(e ->
+						e.getId().equals(p.id()) && e.getProductId().equals(p.productId()))
+				));
+			}
 
-		var entity = repository.getReferenceById(order.id());
-		assertEquals(order.address(), entity.getAddress());
-		assertEquals(order.status(), entity.getStatus());
-		assertEquals(order.priceWithTax(), entity.getPrice());
-		order.products().forEach(p -> assertTrue(
-			entity.getProducts().stream().anyMatch(e ->
-				e.getId().equals(p.id()) && e.getProductId().equals(p.productId()))
-		));
+		);
 
 	}
 
 	@Test
-	@Transactional
 	public void updateOrderWithValidAddressAndStatus() throws Exception {
 		PatchOrder request = new PatchOrder(OrderStatus.DELIVERED, "new address");
-		var oldEntity = createEntity(OrderStatus.PENDING);
+		var oldOrder = createEntity();
 
-		MvcResult result = mockMvc.perform(patch("/order/" + oldEntity.getId())
+		MvcResult result = mockMvc.perform(patch("/order/" + oldOrder.id())
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
@@ -144,18 +158,58 @@ public class OrderControllerTest {
 
 	}
 
-	private OrderEntity createEntity(OrderStatus status){
-		var entity = OrderEntity.builder()
+	@Test
+	public void updateOrderNotFound() throws Exception {
+		PatchOrder request = new PatchOrder(OrderStatus.DELIVERED, "new address");
+
+		mockMvc.perform(patch("/order/" + UUID.randomUUID())
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString(request)))
+			.andExpect(status().isNotFound())
+			.andReturn();
+
+	}
+
+	@Test
+	public void createOrderWithInvalidProducts() throws Exception {
+		PostOrder postOrder = new PostOrder("some address", List.of(nonExistingProductId));
+
+		mockMvc.perform(post("/order")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString(postOrder)))
+			.andExpect(status().isNotFound())
+			.andReturn();
+	}
+
+	@Test
+	public void getAllOrders() throws Exception {
+		var order1 = createEntity();
+		var order2 = createEntity();
+
+		var result = mockMvc.perform(get("/order"))
+			.andExpect(status().isOk())
+			.andReturn();
+
+		var orderList = objectMapper.readValue(result.getResponse().getContentAsString(), OrderList.class);
+
+		assertTrue(orderList.orders().containsAll(List.of(order1, order2)));
+	}
+
+
+	private Order createEntity(){
+
+		return transactionUtil.transactionalSupplier(() -> {
+			var entity = OrderEntity.builder()
 			.address(TestUtil.randomString(10))
 			.price(Math.random())
 			.products(List.of(OrderProductEntity.builder()
 				.productId(UUID.randomUUID())
 				.build()
 			))
-			.status(status)
 			.build();
 
-		return repository.save(entity);
+			return repository.save(entity).toModel(ZoneId.of(tz));
+		});
 	}
 
 }

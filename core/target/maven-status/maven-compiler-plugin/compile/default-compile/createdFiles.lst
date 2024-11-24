@@ -1,3 +1,8 @@
+org/challenge/core/error/NotFoundException.class
+org/challenge/core/model/ErrorResponse.class
 org/challenge/core/util/TestUtil.class
+org/challenge/core/error/HttpStatusException.class
 org/challenge/core/util/PriceCalculator.class
+org/challenge/core/error/BadRequestException.class
+org/challenge/core/error/ConflictException.class
 org/challenge/core/util/TimeUtil.class

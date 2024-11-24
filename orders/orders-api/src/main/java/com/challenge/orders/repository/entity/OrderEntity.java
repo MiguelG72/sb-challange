@@ -34,7 +34,7 @@ public class OrderEntity {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 
-	@Column(nullable = false, updatable = false)
+	@Column(nullable = false)
 	private String address;
 
 	@Column(name = "created_at", nullable = false, updatable = false)

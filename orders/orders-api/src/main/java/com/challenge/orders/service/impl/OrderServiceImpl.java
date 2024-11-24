@@ -64,6 +64,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
+	@Transactional
 	public Order updateOrder(PatchOrder patchOrder, UUID id) {
 
 		validatePatchBody(patchOrder);

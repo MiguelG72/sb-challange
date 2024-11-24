@@ -1,0 +1,9 @@
+com/challenge/catalogue/repository/config/DataInitializer.class
+com/challenge/catalogue/service/impl/ProductServiceImpl.class
+com/challenge/catalogue/service/ProductService.class
+com/challenge/catalogue/controller/ProductController.class
+com/challenge/catalogue/repository/jpa/JpaProductRepository.class
+com/challenge/catalogue/repository/impl/ProductRepositoryImpl.class
+com/challenge/catalogue/ProductApplication.class
+com/challenge/catalogue/repository/ProductRepository.class
+com/challenge/catalogue/repository/entity/ProductEntity.class

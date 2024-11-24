@@ -1,9 +1,0 @@
-/Users/miguelgoncalves/Projects/sb-challange/products/products-api/src/main/java/com/challenge/products/repository/impl/ProductRepositoryImpl.java
-/Users/miguelgoncalves/Projects/sb-challange/products/products-api/src/main/java/com/challenge/products/service/ProductService.java
-/Users/miguelgoncalves/Projects/sb-challange/products/products-api/src/main/java/com/challenge/products/service/impl/ProductServiceImpl.java
-/Users/miguelgoncalves/Projects/sb-challange/products/products-api/src/main/java/com/challenge/products/repository/jpa/JpaProductRepository.java
-/Users/miguelgoncalves/Projects/sb-challange/products/products-api/src/main/java/com/challenge/products/repository/ProductRepository.java
-/Users/miguelgoncalves/Projects/sb-challange/products/products-api/src/main/java/com/challenge/products/ProductApplication.java
-/Users/miguelgoncalves/Projects/sb-challange/products/products-api/src/main/java/com/challenge/products/repository/config/DataInitializer.java
-/Users/miguelgoncalves/Projects/sb-challange/products/products-api/src/main/java/com/challenge/products/repository/entity/ProductEntity.java
-/Users/miguelgoncalves/Projects/sb-challange/products/products-api/src/main/java/com/challenge/products/controller/ProductController.java
