@@ -1,5 +1,8 @@
 package com.challenge.orders.service;
 
+import java.util.List;
+import java.util.UUID;
+
 public interface ProductService {
-	//TODO: implementation (calcPrice)
+	public Double priceWithTax(List<UUID> products);
 }

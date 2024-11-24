@@ -1,14 +1,18 @@
 package org.challenge.core.model;
 
+import lombok.Getter;
 import org.challenge.core.error.HttpStatusException;
 
+@Getter
 public class ErrorResponse {
 
-	private final int statusCode;
-	private final String message;
+	private final String errorDescription;
 
 	public ErrorResponse(HttpStatusException ex){
-		this.statusCode = ex.getStatusCode();
-		this.message = ex.getMessage();
+		this.errorDescription = ex.getMessage();
+	}
+
+	public ErrorResponse(String errorDescription){
+		this.errorDescription = errorDescription;
 	}
 }

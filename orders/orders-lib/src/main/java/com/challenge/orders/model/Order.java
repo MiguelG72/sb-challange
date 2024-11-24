@@ -9,7 +9,8 @@ import lombok.Builder;
 
 @Builder
 public record Order(@NotNull UUID id, @NotBlank String address,
-	@NotNull LocalDateTime createdAt, LocalDateTime updatedAt, @NotNull Double priceWithTax, @NotNull List<OrderProduct> products
+	@NotNull LocalDateTime createdAt, LocalDateTime updatedAt, @NotNull Double priceWithTax, @NotNull List<OrderProduct> products,
+	@NotNull OrderStatus status
 
 ) {
 

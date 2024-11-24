@@ -6,6 +6,6 @@ import org.springframework.http.HttpStatus;
 public class ConflictException extends HttpStatusException {
 
 	public ConflictException(String message) {
-		super(HttpStatus.CONFLICT.value(), message);
+		super(HttpStatus.CONFLICT, message);
 	}
 }

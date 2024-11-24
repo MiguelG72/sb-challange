@@ -8,10 +8,13 @@ import com.challenge.orders.repository.OrderRepository;
 import com.challenge.orders.repository.entity.OrderEntity;
 import com.challenge.orders.repository.entity.OrderProductEntity;
 import com.challenge.orders.service.OrderService;
+import com.challenge.orders.service.ProductService;
+import jakarta.persistence.EntityNotFoundException;
 import java.time.ZoneId;
 import java.util.UUID;
 import org.challenge.core.error.BadRequestException;
 import org.challenge.core.error.ConflictException;
+import org.challenge.core.error.NotFoundException;
 import org.challenge.core.util.PriceCalculator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,15 +24,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderServiceImpl implements OrderService {
 
 	private final OrderRepository repository;
-
     private final ZoneId zoneId;
 
-	@Value("${local.tax}")
-    private Double tax;
+	private final ProductService productService;
 
-	public OrderServiceImpl(OrderRepository repository, @Value("${local.timezone}") String tz) {
+	public OrderServiceImpl(OrderRepository repository, @Value("${local.timezone}") String tz, ProductService productService) {
 		this.repository = repository;
 		zoneId = ZoneId.of(tz);
+		this.productService = productService;
 	}
 
 	@Override
@@ -37,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
 	public Order createOrder(PostOrder postOrder) {
 		var entity = OrderEntity.builder()
 			.address(postOrder.address())
-			.price(PriceCalculator.priceWithTax(5.5, tax)) //TODO: get price from products api
+			.price(productService.priceWithTax(postOrder.products()))
 			.products(postOrder.products().stream()
 				.map(productId -> OrderProductEntity.builder()
 					.productId(productId)
@@ -64,15 +66,10 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public Order updateOrder(PatchOrder patchOrder, UUID id) {
 
-		//TODO: replace thrown exception and develop a handler
+		validatePatchBody(patchOrder);
 		var entity = repository.getOrder(id);
 
-		if(entity.getStatus().isFinal()){
-			throw new ConflictException("Order already closed");
-		}
-		if(patchOrder.status() == null && patchOrder.address() == null){
-			throw new BadRequestException("All fields are null");
-		}
+		validateOrderStatus(entity);
 
 		if(patchOrder.status() != null){
 			entity.setStatus(patchOrder.status());
@@ -84,5 +81,21 @@ public class OrderServiceImpl implements OrderService {
 		return repository.saveOrder(entity)
 			.toModel(zoneId);
 
+	}
+
+	public void validatePatchBody(PatchOrder patchOrder){
+		if(patchOrder.status() == null && patchOrder.address() == null){
+			throw new BadRequestException("All fields are null");
+		}
+	}
+
+	public void validateOrderStatus(OrderEntity order){
+		try{
+			if(order.getStatus().isFinal()){
+				throw new ConflictException("Order already closed");
+			}
+		}catch(EntityNotFoundException e){
+			throw new NotFoundException("order");
+		}
 	}
 }

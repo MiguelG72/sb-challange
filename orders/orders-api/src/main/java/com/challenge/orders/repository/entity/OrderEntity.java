@@ -54,7 +54,7 @@ public class OrderEntity {
     private List<OrderProductEntity> products;
 
 	@Builder
-	public OrderEntity(UUID id, String address, Double price, List<OrderProductEntity> products) {
+	public OrderEntity(UUID id, String address, Double price, List<OrderProductEntity> products, OrderStatus status) {
 		this.id = id;
 		this.address = address;
 		this.price = price;
@@ -63,6 +63,7 @@ public class OrderEntity {
 			product.setOrder(this);
 		}
 		this.products = products;
+		this.status = status;
 	}
 
 	@PrePersist
@@ -88,6 +89,7 @@ public class OrderEntity {
 				.map(OrderProductEntity::toModel)
 				.toList()
 			)
+			.status(status)
 			.build();
 
 	}
