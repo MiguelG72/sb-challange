@@ -1,9 +1,0 @@
-/Users/miguelgoncalves/Projects/sb-challange/catalogue/catalogue-api/src/main/java/com/challenge/catalogue/repository/config/DataInitializer.java
-/Users/miguelgoncalves/Projects/sb-challange/catalogue/catalogue-api/src/main/java/com/challenge/catalogue/repository/jpa/JpaProductRepository.java
-/Users/miguelgoncalves/Projects/sb-challange/catalogue/catalogue-api/src/main/java/com/challenge/catalogue/service/ProductService.java
-/Users/miguelgoncalves/Projects/sb-challange/catalogue/catalogue-api/src/main/java/com/challenge/catalogue/repository/entity/ProductEntity.java
-/Users/miguelgoncalves/Projects/sb-challange/catalogue/catalogue-api/src/main/java/com/challenge/catalogue/service/impl/ProductServiceImpl.java
-/Users/miguelgoncalves/Projects/sb-challange/catalogue/catalogue-api/src/main/java/com/challenge/catalogue/controller/ProductController.java
-/Users/miguelgoncalves/Projects/sb-challange/catalogue/catalogue-api/src/main/java/com/challenge/catalogue/ProductApplication.java
-/Users/miguelgoncalves/Projects/sb-challange/catalogue/catalogue-api/src/main/java/com/challenge/catalogue/repository/impl/ProductRepositoryImpl.java
-/Users/miguelgoncalves/Projects/sb-challange/catalogue/catalogue-api/src/main/java/com/challenge/catalogue/repository/ProductRepository.java

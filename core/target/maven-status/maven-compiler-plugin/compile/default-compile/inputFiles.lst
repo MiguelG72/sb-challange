@@ -1,8 +1,0 @@
-/Users/miguelgoncalves/Projects/sb-challange/core/src/main/java/org/challenge/core/util/PriceCalculator.java
-/Users/miguelgoncalves/Projects/sb-challange/core/src/main/java/org/challenge/core/error/NotFoundException.java
-/Users/miguelgoncalves/Projects/sb-challange/core/src/main/java/org/challenge/core/error/HttpStatusException.java
-/Users/miguelgoncalves/Projects/sb-challange/core/src/main/java/org/challenge/core/error/BadRequestException.java
-/Users/miguelgoncalves/Projects/sb-challange/core/src/main/java/org/challenge/core/model/ErrorResponse.java
-/Users/miguelgoncalves/Projects/sb-challange/core/src/main/java/org/challenge/core/error/ConflictException.java
-/Users/miguelgoncalves/Projects/sb-challange/core/src/main/java/org/challenge/core/util/TimeUtil.java
-/Users/miguelgoncalves/Projects/sb-challange/core/src/main/java/org/challenge/core/util/TestUtil.java
