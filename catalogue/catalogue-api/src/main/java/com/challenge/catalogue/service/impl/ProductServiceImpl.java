@@ -1,5 +1,6 @@
 package com.challenge.catalogue.service.impl;
 
+import com.challenge.catalogue.model.ProductList;
 import com.challenge.catalogue.service.ProductService;
 import com.challenge.catalogue.model.Product;
 import com.challenge.catalogue.repository.ProductRepository;
@@ -24,5 +25,16 @@ public class ProductServiceImpl implements ProductService {
 
 		return repository.getProduct(id)
 			.toModel(zoneId);
+	}
+
+	@Override
+	public ProductList getAll() {
+
+		return new ProductList(
+			repository.getAll()
+			.stream()
+			.map(e -> e.toModel(zoneId))
+			.toList()
+		);
 	}
 }

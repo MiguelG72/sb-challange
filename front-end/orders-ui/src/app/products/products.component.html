@@ -1,0 +1,23 @@
+<h3>Available Products</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th></th>
+      <th></th>
+      <th>Quantity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let product of products">
+      <td>{{ product }}</td>
+      <td>
+        <button (click)="addProduct(product)">Add</button>
+        <button (click)="removeProduct(product)" [disabled]="productQuantities[product.id] === 0">Remove</button>
+      </td>
+      <td>{{ productQuantities[product.id] }}</td>
+    </tr>
+  </tbody>
+</table>
+
+

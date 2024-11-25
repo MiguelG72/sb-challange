@@ -1,0 +1,35 @@
+<h2>Orders</h2>
+<div class="orders-container">
+    <table>
+        <thead>
+            <tr>
+            <th>Id</th>
+            <th>Address</th>
+            <th>Created At</th>
+            <th>Update At</th>
+            <th>Taxed Price</th>
+            <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of orders">
+            <td>{{ item.id }}</td>
+            <td>{{ item.address }}</td>
+            <td>{{ item.createdAt }}</td>
+            <td>{{ item.updatedAt }}</td>
+            <td>{{ item.priceWithTax }}</td>
+            <td>{{ item.status }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<h2>Create a New Order</h2>
+<form (ngSubmit)="createOrder()">
+  <input [(ngModel)]="newOrder.address" name="address" placeholder="Order Address" required>
+  <button type="submit">Create Order</button>
+</form>
+<products
+  (productAdded)="addProduct($event)" 
+  (productRemoved)="removeProduct($event)">
+</products>
+
